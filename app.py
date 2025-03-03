@@ -30,6 +30,8 @@ def get_download_link(url: str) -> dict:
     cookies = parseCookieFile('cookies.txt')
     if cookies:
         axios.cookies.update(cookies)
+    else:
+        return {"success": False, "link": None, "error": "Cookies file not found"}
 
     try:
         response = axios.get(url)
@@ -52,8 +54,7 @@ def get_download_link(url: str) -> dict:
         if 'list' in data and data['list']:
             return {"success": True, "link": data['list'][0]['dlink'], "error": None}
         else:
-            return {"success": False, "link": None, "error": "No download link found in response"}
-
+            return {"success": False, "link": None, "error": "No download link found"}
     except requests.RequestException as e:
         return {"success": False, "link": None, "error": f"HTTP Error: {str(e)}"}
     except ValueError as e:
@@ -75,4 +76,5 @@ def download():
     return jsonify(result)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
